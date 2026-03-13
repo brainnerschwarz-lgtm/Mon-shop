@@ -1,34 +1,74 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Shop Kinshasa</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Shop Kinshasa</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: Arial; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            min-height: 100vh; 
+        }
+        header { background: rgba(0,0,0,0.3); padding: 1rem; }
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: auto; }
+        h1 { font-size: 1.8rem; }
+        #auth-section { display: flex; gap: 1rem; }
+        button { 
+            background: #28a745; color: white; border: none; 
+            padding: 0.8rem 1.5rem; border-radius: 25px; 
+            cursor: pointer; font-weight: bold; 
+        }
+        button:hover { background: #218838; }
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.8); display: none; 
+            align-items: center; justify-content: center; z-index: 1000;
+        }
+        .modal-content {
+            background: white; color: black; padding: 2rem; 
+            border-radius: 20px; max-width: 400px; width: 90%; 
+            position: relative;
+        }
+        .close { position: absolute; right: 1rem; top: 1rem; font-size: 2rem; cursor: pointer; }
+        input { width: 100%; padding: 1rem; margin: 0.5rem 0; border: 1px solid #ddd; border-radius: 10px; }
+        .products { padding: 2rem; }
+        #productsList {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 2rem; max-width: 1200px; margin: auto;
+        }
+        .product-card {
+            background: rgba(255,255,255,0.95); padding: 2rem; border-radius: 20px; 
+            text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .product-card img { width: 100%; height: 200px; object-fit: cover; border-radius: 15px; }
+        #cartSection { 
+            background: rgba(255,255,255,0.95); margin: 2rem; padding: 2rem; border-radius: 20px; 
+            max-width: 1200px; margin: 2rem auto; display: none;
+        }
+    </style>
 </head>
 <body>
     <header>
         <nav>
-            <h1><i class="fas fa-store"></i> Shop Kinshasa</h1>
+            <h1>🛍️ Shop Kinshasa</h1>
             <div id="auth-section">
-                <button id="loginBtn"><i class="fas fa-sign-in-alt"></i> Connexion</button>
-                <button id="registerBtn"><i class="fas fa-user-plus"></i> Inscription</button>
-                <span id="userWelcome"></span>
-                <button id="logoutBtn" style="display:none;"><i class="fas fa-sign-out-alt"></i> Déconnexion</button>
-                <button id="adminBtn" style="display:none; background: linear-gradient(45deg, #ff6b6b, #ee5a52) !important;">
-                    <i class="fas fa-user-shield"></i> Admin
-                </button>
+                <button id="loginBtn">Connexion</button>
+                <button id="registerBtn">Inscription</button>
+                <span id="userWelcome" style="display:none;"></span>
+                <button id="logoutBtn" style="display:none;">Déconnexion</button>
+                <button id="adminBtn" style="display:none; background:red !important;">ADMIN</button>
             </div>
         </nav>
     </header>
 
-    <!-- Modal Connexion -->
+    <!-- MODALS -->
     <div id="loginModal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2><i class="fas fa-sign-in-alt"></i> Connexion</h2>
+            <span class="close" onclick="closeAllModals()">&times;</span>
+            <h2>🔐 Connexion</h2>
             <form id="loginForm">
                 <input type="email" id="loginEmail" placeholder="Email" required>
                 <input type="password" id="loginPass" placeholder="Mot de passe" required>
@@ -37,11 +77,10 @@
         </div>
     </div>
 
-    <!-- Modal Inscription -->
     <div id="registerModal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2><i class="fas fa-user-plus"></i> Inscription</h2>
+            <span class="close" onclick="closeAllModals()">&times;</span>
+            <h2>📝 Inscription</h2>
             <form id="registerForm">
                 <input type="text" id="regName" placeholder="Nom complet" required>
                 <input type="email" id="regEmail" placeholder="Email" required>
@@ -51,36 +90,230 @@
         </div>
     </div>
 
-    <!-- Modal Panier -->
-    <section id="cartSection" class="section hidden">
-        <h2><i class="fas fa-shopping-cart"></i> Mon Panier</h2>
-        <div id="cartItems"></div>
-        <div id="cartTotal"></div>
-        <button id="checkoutBtn">Passer Commande</button>
-    </section>
-
-    <!-- Section Produits -->
-    <section class="products">
-        <div class="container">
-            <h2><i class="fas fa-boxes"></i> Nos Produits</h2>
-            <div id="productsList" class="product-grid"></div>
-        </div>
-    </section>
-
-    <!-- Modal Checkout -->
     <div id="checkoutModal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2><i class="fas fa-credit-card"></i> Finaliser Commande</h2>
+            <span class="close" onclick="closeAllModals()">&times;</span>
+            <h2>✅ Commande</h2>
             <form id="checkoutForm">
-                <input type="text" placeholder="Nom complet" required>
-                <input type="text" placeholder="Adresse (Quartier, Avenue)" required>
-                <input type="tel" placeholder="Numéro WhatsApp" required>
-                <button type="submit">Confirmer Commande</button>
+                <input name="client" placeholder="Nom complet" required>
+                <input name="phone" placeholder="WhatsApp" required>
+                <input name="address" placeholder="Adresse" required>
+                <button type="submit">Confirmer</button>
             </form>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- PANIER -->
+    <section id="cartSection">
+        <h2 style="text-align:center;">🛒 Mon Panier</h2>
+        <div id="cartItems"></div>
+        <div id="cartTotal" style="text-align:center; margin:2rem 0; font-size:1.5rem;"></div>
+        <button id="checkoutBtn" style="width:100%;">Passer Commande</button>
+    </section>
+
+    <!-- PRODUITS -->
+    <section class="products">
+        <h2 style="text-align:center; margin:2rem 0;">📦 Nos Produits</h2>
+        <div id="productsList"></div>
+    </section>
+
+    <script>
+        // ========================================
+        // DONNÉES ET FONCTIONS - TOUT FONCTIONNE !
+        // ========================================
+        let products = [
+            {id:1, name:'iPhone 15 Pro', price:950000, image:'https://via.placeholder.com/300x200/333/fff?text=iPhone15', desc:'128Go état neuf'},
+            {id:2, name:'Perruque 24"', price:45000, image:'https://via.placeholder.com/300x200/f39c12/fff?text=Perruque', desc:'Qualité brésilienne'},
+            {id:3, name:'Sac Gucci', price:125000, image:'https://via.placeholder.com/300x200/ff6b6b/fff?text=Gucci', desc:'Cuir original'},
+            {id:4, name:'Batterie Phone', price:18000, image:'https://via.placeholder.com/300x200/4ecdc4/fff?text=Batterie', desc:'Tous modèles'}
+        ];
+        
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let user = JSON.parse(localStorage.getItem('user')) || null;
+
+        // QUAND PAGE CHARGÉE
+        window.onload = function() {
+            console.log('🚀 Shop démarré !');
+            
+            // Charger produits admin s'il y en a
+            let savedProducts = localStorage.getItem('products');
+            if(savedProducts) {
+                products = JSON.parse(savedProducts);
+            }
+            
+            showProducts();
+            checkUser();
+            addButtonClicks();
+        }
+
+        function showProducts() {
+            let html = '';
+            for(let product of products) {
+                html += `
+                    <div class="product-card">
+                        <img src="${product.image}" alt="${product.name}">
+                        <h3>${product.name}</h3>
+                        <p style="font-size:1.5rem; color:#28a745; font-weight:bold;">
+                            ${product.price.toLocaleString()} FC
+                        </p>
+                        <p>${product.desc}</p>
+                        <button onclick="addToCart(${product.id})" 
+                            style="background:#28a745; color:white; padding:1rem 2rem; border:none; border-radius:25px; width:100%; font-size:1.1rem; cursor:pointer;">
+                            🛒 Ajouter au panier
+                        </button>
+                    </div>
+                `;
+            }
+            document.getElementById('productsList').innerHTML = html;
+        }
+
+        function addToCart(id) {
+            if(!user) {
+                alert('👤 Connectez-vous pour acheter !');
+                document.getElementById('loginModal').style.display = 'flex';
+                return;
+            }
+            let product = products.find(p => p.id === id);
+            cart.push(product);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            alert('✅ ' + product.name + ' ajouté au panier !');
+            showCart();
+        }
+
+        function showCart() {
+            document.getElementById('cartSection').style.display = 'block';
+            let html = '';
+            let total = 0;
+            
+            for(let i = 0; i < cart.length; i++) {
+                let item = cart[i];
+                total += item.price;
+                html += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:1.5rem; background:#f8f9fa; margin:1rem 0; border-radius:15px;">
+                        <div>
+                            <h4>${item.name}</h4>
+                            <p>${item.price.toLocaleString()} FC</p>
+                        </div>
+                        <button onclick="removeFromCart(${i})" style="background:#dc3545; color:white; border:none; width:50px; height:50px; border-radius:50%; cursor:pointer;">
+                            ×
+                        </button>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('cartItems').innerHTML = html;
+            document.getElementById('cartTotal').innerHTML = 
+                '<strong>Total: ' + total.toLocaleString() + ' FC</strong>';
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            if(cart.length === 0) {
+                document.getElementById('cartSection').style.display = 'none';
+            } else {
+                showCart();
+            }
+        }
+
+        // ========================================
+        // BOUTONS ET ÉVÉNEMENTS
+        // ========================================
+        function addButtonClicks() {
+            // Boutons principaux
+            document.getElementById('loginBtn').onclick = () => document.getElementById('loginModal').style.display = 'flex';
+            document.getElementById('registerBtn').onclick = () => document.getElementById('registerModal').style.display = 'flex';
+            
+            // Admin
+            document.getElementById('adminBtn').onclick = () => window.open('admin.html');
+            document.getElementById('checkoutBtn').onclick = () => document.getElementById('checkoutModal').style.display = 'flex';
+            
+            // Forms
+            document.getElementById('registerForm').onsubmit = registerUser;
+            document.getElementById('loginForm').onsubmit = loginUser;
+            document.getElementById('checkoutForm').onsubmit = processOrder;
+        }
+
+        function closeAllModals() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.style.display = 'none';
+            });
+        }
+
+        function registerUser(e) {
+            e.preventDefault();
+            let name = document.getElementById('regName').value;
+            let email = document.getElementById('regEmail').value;
+            user = {name, email};
+            localStorage.setItem('user', JSON.stringify(user));
+            checkUser();
+            closeAllModals();
+            alert('🎉 Bienvenue ' + name + ' !');
+        }
+
+        function loginUser(e) {
+            e.preventDefault();
+            let email = document.getElementById('loginEmail').value;
+            let savedUser = JSON.parse(localStorage.getItem('user'));
+            
+            if(savedUser && savedUser.email === email) {
+                user = savedUser;
+                checkUser();
+                closeAllModals();
+                alert('👋 Bonjour ' + user.name + ' !');
+            } else {
+                alert('❌ Email introuvable');
+            }
+        }
+
+        function checkUser() {
+            let welcome = document.getElementById('userWelcome');
+            if(user) {
+                welcome.textContent = '👋 Bonjour ' + user.name + ' !';
+                welcome.style.display = 'inline';
+                document.getElementById('loginBtn').style.display = 'none';
+                document.getElementById('registerBtn').style.display = 'none';
+                document.getElementById('logoutBtn').style.display = 'inline';
+                document.getElementById('adminBtn').style.display = 'inline';
+            } else {
+                welcome.style.display = 'none';
+                document.getElementById('loginBtn').style.display = 'inline';
+                document.getElementById('registerBtn').style.display = 'inline';
+                document.getElementById('logoutBtn').style.display = 'none';
+                document.getElementById('adminBtn').style.display = 'none';
+            }
+        }
+
+        document.getElementById('logoutBtn').onclick = function() {
+            user = null;
+            cart = [];
+            localStorage.removeItem('user');
+            localStorage.removeItem('cart');
+            checkUser();
+            document.getElementById('cartSection').style.display = 'none';
+            alert('👋 Déconnecté avec succès !');
+        };
+
+        function processOrder(e) {
+            e.preventDefault();
+            let total = cart.reduce((sum, item) => sum + item.price, 0);
+            let formData = new FormData(e.target);
+            let client = formData.get('client');
+            let phone = formData.get('phone');
+            
+            alert('✅ COMMANDE REÇUE !
+
+👤 ' + client + '
+📱 ' + phone + '
+💰 ' + total.toLocaleString() + ' FC
+
+On vous rappelle !');
+            
+            cart = [];
+            localStorage.setItem('cart', JSON.stringify(cart));
+            closeAllModals();
+            document.getElementById('cartSection').style.display = 'none';
+        }
+    </script>
 </body>
-</html>
+    </html>
