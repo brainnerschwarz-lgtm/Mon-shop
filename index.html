@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Shop en Ligne</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <h1>MonShop</h1>
+            <div id="auth-section">
+                <button id="loginBtn">Connexion</button>
+                <button id="registerBtn">Inscription</button>
+                <span id="userWelcome" style="display:none;"></span>
+                <button id="logoutBtn" style="display:none;">Déconnexion</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="loginModal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Connexion</h2>
+                <form id="loginForm">
+                    <input type="email" id="loginEmail" placeholder="Email" required>
+                    <input type="password" id="loginPass" placeholder="Mot de passe" required>
+                    <button type="submit">Se connecter</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="registerModal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Inscription</h2>
+                <form id="registerForm">
+                    <input type="text" id="regName" placeholder="Nom" required>
+                    <input type="email" id="regEmail" placeholder="Email" required>
+                    <input type="password" id="regPass" placeholder="Mot de passe" required>
+                    <button type="submit">S'inscrire</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="products" id="productsSection">
+            <h2>Nos Produits</h2>
+            <div id="productsList"></div>
+        </section>
+
+        <section id="cartSection" style="display:none;">
+            <h2>Panier</h2>
+            <div id="cartItems"></div>
+            <div id="cartTotal"></div>
+            <button id="checkoutBtn">Passer la commande</button>
+        </section>
+
+        <section id="checkoutModal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Finaliser la commande</h2>
+                <form id="checkoutForm">
+                    <input type="text" placeholder="Nom complet" required>
+                    <input type="text" placeholder="Adresse" required>
+                    <input type="tel" placeholder="Téléphone" required>
+                    <button type="submit">Confirmer & Payer</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+                                           </html>
